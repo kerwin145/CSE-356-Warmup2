@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+<script>
+  let zoomlevel = 1;
+  let x = 0;
+  let y = 0;
+  
+  /*$(function(){
+    render();
+    addEventListener("wheel", (event) => {
+      if (zoomlevel <= 7) {
+        zoomlevel += 1;
+        render();
+      }
+    });
+    document.onkeypress = function (e) {
+    e = e || window.event;
+    // use e.keyCode
+    console.log("keycode: " + e.keyCode);
+    if (e.keyCode == 113) {
+      if (zoomlevel > 1) {
+        zoomlevel -= 1;
+        render();
+      }
+    }
+    if (e.keyCode == 119) {
+      if (zoomlevel <= 7) {
+        zoomlevel += 1;
+        render();
+      }
+    }
+};
+
+  });*/
+  function render() {
+    console.log("zoom: " + zoomlevel);
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+
+     
+
+    for(let r=1;r<=2;r++) {
+      for(let c=1;c<=2;c++) {
+        let img = new Image();
+        img.name = `tile-${r}-${c}`;
+        console.log("created image with name: " + img.name);
+        img.onload = function() {
+            console.log("loaded image: " + this.name);
+            ctx.drawImage(this, ((c-1)*512),((r-1)*512),this.width,this.height);
+        };
+        img.src = `http://209.151.154.214:80/tiles/l${zoomlevel}/${r}/${c}.jpg`;
+        console.log("image source: " + img.src);
+      }
+    }
+
+    //img.src = "https://t4.ftcdn.net/jpg/05/29/61/37/360_F_529613760_ZN7wI9c62MyPeFC8ioliQ2wrVohVuRey.jpg";
+    canvas.width = window.innerWidth;
+
+    canvas.height = window.innerHeight;
+
+  }
+</script>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+</style>
+</head>
+
+<body>
+  <div id="loginForm">
+    <h2>Login</h2>
+    <form id="login">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+  <div id="logoutSection">
+    <button id="logout">Logout</button>
+  </div>
+  <script src="script.js"></script>
+
+  <div id="wp2">
+    <input type="radio" name="styleradio" value="color" onclick="viewer.destroy(); initTiles()"}>Color
+    <input type="radio" name="styleradio" value="bw" onclick="viewer.destroy(); initTiles()">Black and White
+    <div id="openseadragon1" style="width: 800px; height: 600px;"></div>
+  </div>
+</body>
+
+<script src="https://unpkg.com/openseadragon@4.1.0/build/openseadragon/openseadragon.js"></script>
+<script type="text/javascript">
+  var viewer;
+  initTiles();
+  function initTiles() {
+    viewer = OpenSeadragon({
+      id:            "openseadragon1",
+      navigatorSizeRatio: 0.25,
+      showZoomControl: false,
+      showHomeControl: false,
+      showFullPageControl: false,
+      tileSources:   {
+          height: 150*512,
+          width: 150*512,
+          tileSize: 512,
+          maxLevel: 8,
+          minLevel: 1,
+          getTileUrl: mapURL,
+      }
+    });
+  }
+  function mapURL(level,x,y) {
+    let col = getStyle();
+    return `http://209.151.154.214:80/tiles/l${level}/${1+y}/${1+x}.jpg?style=${col}`;
+  }
+  function getStyle() {
+    var rads = document.getElementsByName('styleradio');
+    for (let i=0;i<rads.length;i++) {
+      if (rads[i].checked) {
+        return rads[i].value;
+      }
+    }
+    return "color";
+  }
+</script>
+
+</html>
